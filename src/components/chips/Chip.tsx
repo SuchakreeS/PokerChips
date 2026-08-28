@@ -24,24 +24,46 @@ export const CHIP_DENOMINATION_COLORS: Record<number, string> = {
   1000: "#D97706", // amber-600 (gold, echoes the app's pot/CTA accent)
 };
 
-/** Returns true if a hex fill is light enough to need dark ink on top. */
-function isLightColor(hex: string): boolean {
+// Two fixed ink candidates. Whichever wins the WCAG contrast check against
+// a given chip fill is used for both the value text and the dashed ring, so
+// every denomination gets a guaranteed-legible, non-hardcoded pairing.
+const INK_WHITE = "#FFFFFF";
+const INK_DARK = "#020617"; // slate-950 — close to near-black without being pure #000
+
+/** WCAG relative luminance of a 6-digit hex color (0..1). */
+function relativeLuminance(hex: string): number {
   const normalized = hex.replace("#", "");
-  if (normalized.length !== 6) return false;
-  const r = parseInt(normalized.slice(0, 2), 16);
-  const g = parseInt(normalized.slice(2, 4), 16);
-  const b = parseInt(normalized.slice(4, 6), 16);
-  // Relative luminance (perceptual weighting).
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.6;
+  const channel = (start: number) => {
+    const c = parseInt(normalized.slice(start, start + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  const r = channel(0);
+  const g = channel(2);
+  const b = channel(4);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** WCAG contrast ratio (1..21) between two hex colors. */
+function contrastRatio(hexA: string, hexB: string): number {
+  const lA = relativeLuminance(hexA);
+  const lB = relativeLuminance(hexB);
+  const lighter = Math.max(lA, lB);
+  const darker = Math.min(lA, lB);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Picks whichever of the two ink candidates has higher contrast against the
+ * given fill color. This is computed per-color (not a light/dark threshold
+ * guess) so it holds for every entry in CHIP_DENOMINATION_COLORS as well as
+ * any arbitrary color a caller passes in.
+ */
+function pickInkColor(fill: string): string {
+  return contrastRatio(fill, INK_WHITE) >= contrastRatio(fill, INK_DARK) ? INK_WHITE : INK_DARK;
 }
 
 export function Chip({ value, color }: ChipProps) {
-  const light = isLightColor(color);
-  // Dark chips get a warm amber ring + ink (echoes the app's gold accent);
-  // light chips get a dark slate ring + ink for contrast against the felt.
-  const inkColor = light ? "#0F172A" : "#FDE68A";
-  const ringColor = light ? "#0F172A" : "#FDE68A";
+  const inkColor = pickInkColor(color);
 
   return (
     <svg width="48" height="48" viewBox="0 0 48 48" role="img" aria-label={`${value} chip`}>
@@ -51,11 +73,11 @@ export function Chip({ value, color }: ChipProps) {
         cy="24"
         r="16"
         fill="none"
-        stroke={ringColor}
+        stroke={inkColor}
         strokeWidth="2"
         strokeDasharray="4 3"
         strokeLinecap="round"
-        opacity={light ? 0.6 : 0.8}
+        opacity={0.7}
       />
       <text
         x="24"
