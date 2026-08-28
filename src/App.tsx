@@ -8,10 +8,14 @@ function GameScreen() {
   const { state } = useGame();
   if (!state.game) return <GameSetup />;
   return (
-    <div className="min-h-dvh space-y-4 bg-slate-950 p-4">
-      <Table />
-      <Showdown />
-      <ActionControls />
+    <div className="flex h-dvh flex-col gap-2 overflow-hidden bg-slate-950 p-4">
+      <div className="flex min-h-0 flex-1 items-center justify-center">
+        <Table />
+      </div>
+      <div className="shrink-0 space-y-2">
+        <Showdown />
+        <ActionControls />
+      </div>
     </div>
   );
 }

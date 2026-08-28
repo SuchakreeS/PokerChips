@@ -14,7 +14,7 @@ export function Table() {
   if (!game) return null;
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-2xl rounded-full border-4 border-emerald-950 bg-gradient-to-b from-emerald-700 to-emerald-800 shadow-inner">
+    <div className="relative mx-auto aspect-square w-[min(100%,42rem,60vh)] rounded-full border-4 border-emerald-950 bg-gradient-to-b from-emerald-700 to-emerald-800 shadow-inner">
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/20 px-6 py-4 text-center text-white">
         <div className="text-xs font-medium uppercase tracking-widest text-emerald-100/80">Pot</div>
         <div className="text-3xl font-bold tabular-nums text-amber-300">{game.mainPot}</div>
