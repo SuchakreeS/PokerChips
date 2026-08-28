@@ -23,6 +23,9 @@ export function applyPlayerAction(
   }
   const player = game.players[playerIndex];
   if (player.status !== "active") return { ok: false, reason: "Player cannot act" };
+  if (game.playersToAct.length === 0) {
+    return { ok: false, reason: "Hand is over — start the next hand" };
+  }
 
   const currentBet = Math.max(...game.players.map((p) => p.currentBetThisStreet));
   const players = [...game.players];

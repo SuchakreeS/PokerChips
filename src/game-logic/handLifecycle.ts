@@ -1,6 +1,15 @@
 import { Game, Player, Result } from "./types";
 import { advanceTurn } from "./turnOrder";
 
+/**
+ * True once a hand is fully wrapped up: no more betting action pending and
+ * every pot has been awarded. Only in this state is it safe to start the
+ * next hand or reset the game without destroying live chips.
+ */
+export function isHandResolved(game: Game): boolean {
+  return game.playersToAct.length === 0 && game.mainPot === 0 && game.sidePots.length === 0;
+}
+
 export function nextHand(game: Game): Result<Game> {
   const players: Player[] = game.players.map((p) => ({
     ...p,

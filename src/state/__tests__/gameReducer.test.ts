@@ -69,4 +69,21 @@ describe("gameReducer", () => {
     const state = gameReducer(initial, { type: "NEXT_HAND" });
     expect(state).toEqual(initial);
   });
+
+  it("RESET_GAME clears the game and any error, returning to setup", () => {
+    const setupState = gameReducer(initial, {
+      type: "SETUP_GAME",
+      payload: {
+        players: [{ name: "Alice", stack: 100 }, { name: "Bob", stack: 100 }],
+        bettingStructure: "no-limit",
+        smallBlind: 1,
+        bigBlind: 2,
+      },
+    });
+    expect(setupState.game).not.toBeNull();
+
+    const state = gameReducer(setupState, { type: "RESET_GAME" });
+    expect(state.game).toBeNull();
+    expect(state.lastError).toBeNull();
+  });
 });

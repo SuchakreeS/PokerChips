@@ -8,7 +8,7 @@ function GameScreen() {
   const { state } = useGame();
   if (!state.game) return <GameSetup />;
   return (
-    <div className="space-y-4 p-4">
+    <div className="min-h-dvh space-y-4 bg-slate-950 p-4">
       <Table />
       <Showdown />
       <ActionControls />

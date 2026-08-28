@@ -1,6 +1,7 @@
 import { BettingStructure, Game, Player } from "../game-logic/types";
 import { nextHand } from "../game-logic/handLifecycle";
 import { applyPlayerAction, awardPot } from "../game-logic/playerAction";
+import { clearSavedGame } from "./persistence";
 
 export type GameAction =
   | {
@@ -19,7 +20,8 @@ export type GameAction =
       payload: { playerId: string; action: "fold" | "check" | "call" | "bet-raise"; amount?: number };
     }
   | { type: "NEXT_HAND" }
-  | { type: "AWARD_POT"; payload: { potIndex: number; winnerId: string } };
+  | { type: "AWARD_POT"; payload: { potIndex: number; winnerId: string } }
+  | { type: "RESET_GAME" };
 
 export interface GameReducerState {
   game: Game | null;
@@ -78,6 +80,10 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
       const result = awardPot(state.game, action.payload.potIndex, action.payload.winnerId);
       if (!result.ok) return { ...state, lastError: result.reason };
       return { game: result.value, lastError: null };
+    }
+    case "RESET_GAME": {
+      clearSavedGame();
+      return { game: null, lastError: null };
     }
     default:
       return state;

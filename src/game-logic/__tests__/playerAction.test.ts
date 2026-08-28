@@ -87,6 +87,14 @@ describe("applyPlayerAction", () => {
     expect(result.value.playersToAct.sort()).toEqual(["a", "b", "c"]);
   });
 
+  it("rejects any action once the hand is over (playersToAct is empty)", () => {
+    const g = game({ playersToAct: [], mainPot: 0, sidePots: [], activePlayerIndex: 0 });
+    const result = applyPlayerAction(g, "a", "check");
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toMatch(/hand is over/i);
+  });
+
   it("finalizes pots when only one contesting player remains after a fold", () => {
     const g = game({
       players: [
