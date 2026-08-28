@@ -1,21 +1,27 @@
-import { useState } from 'react'
-import './App.css'
+import { GameProvider, useGame } from "./state/GameContext";
+import { GameSetup } from "./components/setup/GameSetup";
+import { Table } from "./components/table/Table";
+import { ActionControls } from "./components/actions/ActionControls";
+import { Showdown } from "./components/showdown/Showdown";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+function GameScreen() {
+  const { state } = useGame();
+  if (!state.game) return <GameSetup />;
   return (
-    <>
-      <div>
-        <h1>Poker Chip Distributor</h1>
-        <p>
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-        </p>
-      </div>
-    </>
-  )
+    <div className="space-y-4 p-4">
+      <Table />
+      <Showdown />
+      <ActionControls />
+    </div>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <GameProvider>
+      <GameScreen />
+    </GameProvider>
+  );
+}
+
+export default App;
