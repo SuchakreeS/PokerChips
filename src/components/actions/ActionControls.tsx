@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useGame } from "../../state/GameContext";
 import { calculateBetLimits } from "../../game-logic/betting";
 import { isHandResolved } from "../../game-logic/handLifecycle";
@@ -15,6 +15,12 @@ export function ActionControls() {
     const result = calculateBetLimits(game, activePlayer.id);
     return result.ok ? result.value : null;
   }, [game, activePlayer]);
+
+  // Pre-fill the raise input with the minimum legal raise at the start of each turn,
+  // so the player only has to type something if they want a different amount.
+  useEffect(() => {
+    setRaiseAmount(limits?.canRaise ? String(limits.min) : "");
+  }, [activePlayer?.id, limits]);
 
   if (!game) return null;
 
