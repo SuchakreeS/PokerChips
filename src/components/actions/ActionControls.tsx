@@ -59,34 +59,36 @@ export function ActionControls() {
       )}
 
       {handIsLive && activePlayer && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <button
-            type="button"
-            onClick={() => act("fold")}
-            className="min-h-12 rounded-xl border border-red-900/50 bg-slate-800 px-4 py-3 font-semibold text-red-200 transition-colors duration-150 hover:bg-red-950/50 active:scale-95"
-          >
-            Fold
-          </button>
-          {canCheck ? (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => act("check")}
-              className="min-h-12 rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 font-semibold text-slate-100 transition-colors duration-150 hover:bg-slate-700 active:scale-95"
+              onClick={() => act("fold")}
+              className="min-h-12 rounded-xl border border-red-900/50 bg-slate-800 px-4 py-3 font-semibold text-red-200 transition-colors duration-150 hover:bg-red-950/50 active:scale-95"
             >
-              Check
+              Fold
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => act("call")}
-              className="min-h-12 rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 font-semibold text-slate-100 transition-colors duration-150 hover:bg-slate-700 active:scale-95"
-            >
-              Call
-            </button>
-          )}
+            {canCheck ? (
+              <button
+                type="button"
+                onClick={() => act("check")}
+                className="min-h-12 rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 font-semibold text-slate-100 transition-colors duration-150 hover:bg-slate-700 active:scale-95"
+              >
+                Check
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => act("call")}
+                className="min-h-12 rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 font-semibold text-slate-100 transition-colors duration-150 hover:bg-slate-700 active:scale-95"
+              >
+                Call
+              </button>
+            )}
+          </div>
 
           {limits?.canRaise && (
-            <>
+            <div className="space-y-2">
               <input
                 className="min-h-12 w-full rounded-xl border border-slate-600 bg-slate-800 px-3 py-3 text-center font-semibold text-slate-100 [appearance:textfield] focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 type="number"
@@ -101,11 +103,11 @@ export function ActionControls() {
               <button
                 type="button"
                 onClick={betOrRaise}
-                className="min-h-12 rounded-xl bg-amber-600 px-4 py-3 font-bold text-slate-950 transition-colors duration-150 hover:bg-amber-500 active:scale-95"
+                className="min-h-12 w-full rounded-xl bg-amber-600 px-4 py-3 font-bold text-slate-950 transition-colors duration-150 hover:bg-amber-500 active:scale-95"
               >
                 Bet/Raise
               </button>
-            </>
+            </div>
           )}
         </div>
       )}
