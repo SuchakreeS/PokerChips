@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Minus, Plus } from "lucide-react";
 import { useGame } from "../../state/GameContext";
 import { calculateBetLimits } from "../../game-logic/betting";
 import { isHandResolved } from "../../game-logic/handLifecycle";
@@ -6,7 +7,7 @@ import { isHandResolved } from "../../game-logic/handLifecycle";
 export function ActionControls() {
   const { state, dispatch } = useGame();
   const game = state.game;
-  const [raiseAmount, setRaiseAmount] = useState("");
+  const [raiseAmount, setRaiseAmount] = useState(0);
 
   const activePlayer = game?.players[game.activePlayerIndex];
 
@@ -16,10 +17,10 @@ export function ActionControls() {
     return result.ok ? result.value : null;
   }, [game, activePlayer]);
 
-  // Pre-fill the raise input with the minimum legal raise at the start of each turn,
-  // so the player only has to type something if they want a different amount.
+  // Reset the raise amount to the minimum legal raise at the start of each turn,
+  // so +/- always starts from a value the player is already allowed to bet.
   useEffect(() => {
-    setRaiseAmount(limits?.canRaise ? String(limits.min) : "");
+    setRaiseAmount(limits?.canRaise ? limits.min : 0);
   }, [activePlayer?.id, limits]);
 
   if (!game) return null;
@@ -39,12 +40,15 @@ export function ActionControls() {
 
   function betOrRaise() {
     if (!activePlayer) return;
-    const amount = Number(raiseAmount);
     dispatch({
       type: "PLAYER_ACTION",
-      payload: { playerId: activePlayer.id, action: "bet-raise", amount },
+      payload: { playerId: activePlayer.id, action: "bet-raise", amount: raiseAmount },
     });
-    setRaiseAmount("");
+  }
+
+  function adjustRaise(delta: number) {
+    if (!limits) return;
+    setRaiseAmount((prev) => Math.min(limits.max, Math.max(limits.min, prev + delta)));
   }
 
   return (
@@ -89,17 +93,31 @@ export function ActionControls() {
 
           {limits?.canRaise && (
             <div className="flex overflow-hidden rounded-xl border border-slate-600">
-              <input
-                className="min-h-12 w-24 min-w-0 flex-1 border-r border-slate-600 bg-slate-800 px-3 py-3 text-center font-semibold text-slate-100 [appearance:textfield] focus:relative focus:z-10 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                type="number"
-                inputMode="numeric"
-                min={limits.min}
-                max={limits.max}
-                placeholder={`${limits.min}-${limits.max}`}
-                value={raiseAmount}
-                onChange={(e) => setRaiseAmount(e.target.value)}
+              <button
+                type="button"
+                onClick={() => adjustRaise(-game.bigBlind)}
+                disabled={raiseAmount <= limits.min}
+                aria-label="Decrease raise amount"
+                className="min-h-12 w-12 shrink-0 border-r border-slate-600 bg-slate-800 text-slate-100 transition-colors duration-150 hover:bg-slate-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-slate-800"
+              >
+                <Minus className="mx-auto" size={18} aria-hidden="true" />
+              </button>
+              <div
+                role="status"
                 aria-label="Raise amount"
-              />
+                className="flex min-h-12 min-w-0 flex-1 items-center justify-center border-r border-slate-600 bg-slate-800 px-2 text-center font-semibold tabular-nums text-slate-100"
+              >
+                {raiseAmount}
+              </div>
+              <button
+                type="button"
+                onClick={() => adjustRaise(game.bigBlind)}
+                disabled={raiseAmount >= limits.max}
+                aria-label="Increase raise amount"
+                className="min-h-12 w-12 shrink-0 border-r border-slate-600 bg-slate-800 text-slate-100 transition-colors duration-150 hover:bg-slate-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-slate-800"
+              >
+                <Plus className="mx-auto" size={18} aria-hidden="true" />
+              </button>
               <button
                 type="button"
                 onClick={betOrRaise}
