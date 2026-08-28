@@ -88,9 +88,9 @@ export function ActionControls() {
           </div>
 
           {limits?.canRaise && (
-            <div className="overflow-hidden rounded-xl border border-slate-600">
+            <div className="flex overflow-hidden rounded-xl border border-slate-600">
               <input
-                className="min-h-12 w-full border-b border-slate-600 bg-slate-800 px-3 py-3 text-center font-semibold text-slate-100 [appearance:textfield] focus:relative focus:z-10 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="min-h-12 w-24 min-w-0 flex-1 border-r border-slate-600 bg-slate-800 px-3 py-3 text-center font-semibold text-slate-100 [appearance:textfield] focus:relative focus:z-10 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 type="number"
                 inputMode="numeric"
                 min={limits.min}
@@ -103,7 +103,7 @@ export function ActionControls() {
               <button
                 type="button"
                 onClick={betOrRaise}
-                className="min-h-12 w-full bg-amber-600 px-4 py-3 font-bold text-slate-950 transition-colors duration-150 hover:bg-amber-500 active:scale-95"
+                className="min-h-12 flex-1 bg-amber-600 px-4 py-3 font-bold text-slate-950 transition-colors duration-150 hover:bg-amber-500 active:scale-95"
               >
                 Bet/Raise
               </button>
